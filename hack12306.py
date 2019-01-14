@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@time: 2018-01-04
-@author: ssf
+@time: 2018-11-04
+@author: liangfh
 """
 
 """
@@ -38,7 +38,8 @@ class hackTickets(object):
         cp = ConfigParser()
         try:
             # 指定读取config.ini编码格式，防止中文乱码（兼容windows）
-            cp.readfp(codecs.open(config_file, "r", "utf-8-sig"))
+            #cp.readfp(codecs.open(config_file, "r", "utf-8-sig"))
+           cp.read_file(codecs.open(config_file,"r","utf-8-sig"))
         except IOError as e:
             print(u'打开配置文件"%s"失败, 请先创建或者拷贝一份配置文件config.ini' % (config_file))
             input('Press any key to continue')
@@ -237,24 +238,26 @@ class hackTickets(object):
         print(u'开始选择用户...')
         for user in self.users:
             self.driver.find_by_text(user).last.click()
-
+            if user == "梁付槐(学生)":
+                self.driver.find_by_id('qd_closeDefaultWarningWindowDialog_id').click()
     def confirmOrder(self):
         print(u"选择席别...")
         if self.seatType:
-            self.driver.find_by_value(self.seatType).click()
+            #self.driver.find_by_value(self.seatType).click()
+            self.driver.find_by_id('seatType_1').find_by_value(self.seatType).click()
         else:
             print(u"未指定席别，按照12306默认席别")
 
     def submitOrder(self):
         print(u"提交订单...")
-        sleep(1)
+        sleep(0.1)
         self.driver.find_by_id('submitOrder_id').click()
 
     def confirmSeat(self):
         # 若提交订单异常，请适当加大sleep的时间
-        sleep(1)
+        sleep(0.2)
         print(u"确认选座...")
-        if self.driver.find_by_text(u"硬座余票<strong>0</strong>张") == None:
+        if self.driver.find_by_text(u"硬座余票<strong>0</strong>张") != None:
             self.driver.find_by_id('qr_submit_id').click()
         else:
             if self.noseat_allow == 0:
@@ -282,7 +285,7 @@ class hackTickets(object):
                 self.buyOrderZero()
             print(u"开始预订...")
 
-            sleep(0.8)
+            sleep(0.2)
             # 选择用户
             self.selUser()
             # 确认订单
@@ -292,7 +295,7 @@ class hackTickets(object):
             # 确认选座
             self.confirmSeat()
 
-            print(time.clock() - t)
+            # print(time.clock() - t)
 
         except Exception as e:
             print(e)
